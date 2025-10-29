@@ -1,80 +1,44 @@
-import fetch from 'node-fetch'
+import { File } from 'megajs'
+import mime from 'mime-types'
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-    const url = args[0]
-
-    if (!url) {
-        return await conn.sendMessage(m.chat, { text: `${lenguajeGB['smsAvisoMG']()}${mid.smsFire}` }, { quoted: m })
-    }
-
-    if (!/^https?:\/\/(www\.)?mediafire\.com/i.test(url)) {
-        return await conn.sendMessage(
-            m.chat,
-            { text: `${lenguajeGB['smsAvisoMG']()} *Enlace no válido.*\nEjemplo: \`${usedPrefix + command} https://www.mediafire.com/file/ejemplo/file.zip\`` },
-            { quoted: m }
-        )
-    }
-
-    // ⏳ Reacción inicial
-    await conn.sendMessage(m.chat, { react: { text: "⏳️", key: m.key } })
-
-    try {
-        const api = `https://delirius-apiofc.vercel.app/download/mediafire?url=${encodeURIComponent(url)}`
-        const res = await fetch(api)
-        if (!res.ok) throw new Error(`Error de la API: ${res.status} ${res.statusText}`)
-
-        const json = await res.json()
-        const data = json?.data || json?.result || json
-
-        const fileUrl   = data?.url || data?.link || data?.download || data?.dl || data?.download_url
-        const fileTitle = data?.title || data?.filename || data?.name || 'archivo'
-        const fileSize  = data?.size || data?.filesize || 'Desconocido'
-        const fileMime  = data?.mime || data?.mimetype || 'application/octet-stream'
-
-        if (!fileUrl) throw new Error('No se pudo obtener el enlace de descarga.')
-
-        // Mensaje de éxito **solo al usar el comando**
-        const successCaption = `
-╰⊱💚⊱ *ÉXITO | SUCCESS* ⊱💚⊱╮
-
-> ┃ 💫 NOMBRE
-> ┃ ${fileTitle}
-> ┃ 💪 PESO
-> ┃ ${fileSize}
-> ┃ 🚀 TIPO
-> ┃ ${fileMime}
-`.trim()
-
-        await conn.sendMessage(m.chat, { text: successCaption }, { quoted: m })
-
-        // 🔹 Enviar archivo **limpio** SIN caption, SIN m, solo lo mínimo
-        await conn.sendMessage(
-            m.chat,
-            {
-                document: { url: fileUrl },
-                mimetype: fileMime,
-                fileName: fileTitle
-            }
-        )
-
-        // ✅ Reacción al finalizar
-        await conn.sendMessage(m.chat, { react: { text: "✅️", key: m.key } })
-
-    } catch (e) {
-        console.error('❌ Error en mediafire:', e)
-        await conn.sendMessage(m.chat, { react: { text: "❌️", key: m.key } })
-        await conn.sendMessage(
-            m.chat,
-            { text: `${lenguajeGB['smsMalError3']()}#report ${lenguajeGB['smsMensError2']()} ${usedPrefix + command}\n\n${String(e.message || e)}\n\n${wm}` },
-            { quoted: m }
-        )
-    }
+let handler = async (m, {conn, args, usedPrefix, text, command}) => {
+try {
+if (!text) return m.reply('Ingresa un enlace de Mega')
+const file = File.fromURL(text)
+await file.loadAttributes()
+const fileExtension = file.name.split('.').pop().toLowerCase()
+const mimeType = mime.lookup(fileExtension)
+let caption = `${eg}
+┃ 𓃠 *${gt} ${vs}*
+┃┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+┃ 💫 𝙉𝙊𝙈𝘽𝙍𝙀 | 𝙉𝘼𝙈𝙀
+┃ ${file.name}
+┃┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+┃ 💪 𝙋𝙀𝙎𝙊 |  𝙎𝙄𝙕𝙀
+┃ ${formatBytes(file.size)}
+┃┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+┃ 🚀 𝙏𝙄𝙋𝙊 | 𝙏𝙔𝙋𝙀
+┃ ${mimeType}
+┃
+┃ ${wm}`.trim()
+conn.reply(m.chat, caption, m)
+if (file.size >= 1800000000 && !file.directory) return m.reply('Error: El archivo es muy pesado')
+const data = await file.downloadBuffer()
+await conn.sendFile(m.chat, data, file.name, null, m, null, {mimeType, asDocument: true})
+} catch (error) {
+return m.reply(`Error: ${error.message}`)
+}
 }
 
-handler.help = ['mediafire'].map(v => v + ' <url>')
+handler.help = ['mega']
 handler.tags = ['downloader']
-handler.command = /^(mediafire|mediafiredl|dlmediafire)$/i
-handler.register = false
-handler.limit = false
-
+handler.command = /^(mega)$/i
 export default handler
+
+function formatBytes(bytes) {
+if (bytes === 0) return '0 Bytes'
+const k = 1024
+const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+const i = Math.floor(Math.log(bytes) / Math.log(k))
+return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
