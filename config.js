@@ -147,8 +147,8 @@ global.eg = '╰⊱💚⊱ *𝙀́𝙓𝙄𝙏𝙊 | 𝙎𝙐𝘾𝘾𝙀𝙎�
 global.exito = eg
 
 // • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •
-global.wm = '𝙂𝙖𝙩𝙖𝘽𝙤𝙩-𝙈𝘿 : 𝙂𝙖𝙩𝙖 𝘿𝙞𝙤𝙨'
-global.igfg = '𝙂𝙖𝙩𝙖𝘽𝙤𝙩-𝙈𝘿'
+global.wm = `𝕭𝖊𝖗𝖘𝖊𝖗𝖐 𝕭𝖔𝖙`
+global.igfg = `𝕭𝖔𝖙`
 global.nomorown = '593993684821'
 global.pdoc = [
 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
