@@ -6,21 +6,21 @@ import fs from 'fs'
 import moment from 'moment-timezone'
 import fetch from 'node-fetch'
 import { xpRange } from '../lib/levelling.js'
-const {levelling} = '../lib/levelling.js'
+const { levelling } = '../lib/levelling.js'
 import PhoneNumber from 'awesome-phonenumber'
 import { promises } from 'fs'
 import { join } from 'path'
-let handler = async (m, {conn, usedPrefix, usedPrefix: _p, __dirname, text, command}) => {
+let handler = async (m, { conn, usedPrefix, usedPrefix: _p, __dirname, text, command }) => {
 const dispositivo = await getDevice(m.key.id)
 try {
-let _package = JSON.parse(await promises.readFile(join(__dirname, '../package.json')).catch((_) => ({}))) || {}
-let {exp, limit, level, role} = global.db.data.users[m.sender]
-let {min, xp, max} = xpRange(level, global.multiplier)
+let _package = JSON.parse(await promises.readFile(join(__dirname, '../package.json')).catch(_ => ({}))) || {}
+let { exp, limit, level, role } = global.db.data.users[m.sender]
+let { min, xp, max } = xpRange(level, global.multiplier)
 let name = await conn.getName(m.sender)
-let d = new Date(new Date() + 3600000)
+let d = new Date(new Date + 3600000)
 let locale = 'es'
 let weton = ['Pahing', 'Pon', 'Wage', 'Kliwon', 'Legi'][Math.floor(d / 84600000) % 5]
-let week = d.toLocaleDateString(locale, {weekday: 'long'})
+let week = d.toLocaleDateString(locale, { weekday: 'long' })
 let date = d.toLocaleDateString(locale, {
 day: 'numeric',
 month: 'long',
@@ -40,23 +40,20 @@ let _uptime = process.uptime() * 1000
 let _muptime
 if (process.send) {
 process.send('uptime')
-_muptime =
-(await new Promise((resolve) => {
+_muptime = await new Promise(resolve => {
 process.once('message', resolve)
 setTimeout(resolve, 1000)
-})) * 1000
+}) * 1000
 }
-let {money, joincount} = global.db.data.users[m.sender]
+let { money, joincount } = global.db.data.users[m.sender]
 let user = global.db.data.users[m.sender]
 let muptime = clockString(_muptime)
 let uptime = clockString(_uptime)
 let totalreg = Object.keys(global.db.data.users).length
-let rtotalreg = Object.values(global.db.data.users).filter((user) => user.registered == true).length
+let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length
 let replace = {
 '%': '%',
-p: _p,
-uptime,
-muptime,
+p: _p, uptime, muptime,
 me: conn.getName(conn.user.jid),
 npmname: _package.name,
 npmdesc: _package.description,
@@ -66,34 +63,22 @@ maxexp: xp,
 totalexp: exp,
 xp4levelup: max - exp,
 github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
-level,
-limit,
-name,
-weton,
-week,
-date,
-dateIslamic,
-time,
-totalreg,
-rtotalreg,
-role,
+level, limit, name, weton, week, date, dateIslamic, time, totalreg, rtotalreg, role,
 readmore: readMore
 }
 text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
 let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
 let mentionedJid = [who]
 let username = conn.getName(who)
-let taguser = '@' + m.sender.split('@s.whatsapp.net')[0]
+let taguser = '@' + m.sender.split("@s.whatsapp.net")[0]
 let pp = gataVidMenu
 let vn = 'https://qu.ax/bfaM.mp3'
-let pareja = global.db.data.users[m.sender].pasangan
+let pareja = global.db.data.users[m.sender].pasangan 
 //let fsizedoc = '1'.repeat(10)
 //let adReply = { fileLength: fsizedoc, seconds: fsizedoc, contextInfo: { forwardingScore: fsizedoc, externalAdReply: { showAdAttribution: true, title: wm, body: '👋 ' + username, mediaUrl: ig, description: 'Hola', previewType: 'PHOTO', thumbnail: await(await fetch(gataMenu.getRandom())).buffer(), sourceUrl: redesMenu.getRandom() }}}
-const numberToEmoji = {0: '0️⃣', 1: '1️⃣', 2: '2️⃣', 3: '3️⃣', 4: '4️⃣', 5: '5️⃣', 6: '6️⃣', 7: '7️⃣', 8: '8️⃣', 9: '9️⃣'}
+const numberToEmoji = { "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣", }
 let lvl = level
-let emoji = Array.from(lvl.toString())
-.map((digit) => numberToEmoji[digit] || '❓')
-.join('')
+let emoji = Array.from(lvl.toString()).map((digit) => numberToEmoji[digit] || "❓").join("")
 
 const lugarFecha = moment().tz('America/Lima')
 const formatoFecha = {
@@ -103,15 +88,15 @@ months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto
 lugarFecha.locale('es', formatoFecha)
 const horarioFecha = lugarFecha.format('dddd, DD [de] MMMM [del] YYYY || HH:mm A').replace(/^\w/, (c) => c.toUpperCase())
 
-if (!m.isWABusiness && !/web|desktop|unknown/gi.test(dispositivo)) {
+if (!m.isWABusiness && !/web|desktop|unknown/gi.test(dispositivo)) {  
 let menu = `⎔ \`\`\`${horarioFecha}\`\`\`
 ⎔ *${lenguajeGB['smsTotalUsers']()}* ➺ _${Object.keys(global.db.data.users).length}_ 
 ⎔ *Registrados »* ${rtotalreg}/${totalreg}    
 ⎔ *${lenguajeGB['smsUptime']()}* ➺ _${uptime}_ 
 ⎔ *${lenguajeGB['smsVersion']()}* ➺ _${vs}_
 ⎔ *${lenguajeGB['smsMode']()} ➺* _${global.opts['self'] ? `${lenguajeGB['smsModePrivate']().charAt(0).toUpperCase() + lenguajeGB['smsModePrivate']().slice(1).toLowerCase()}` : `${lenguajeGB['smsModePublic']().charAt(0).toUpperCase() + lenguajeGB['smsModePublic']().slice(1).toLowerCase()}`}_
-⎔ *${lenguajeGB['smsBanChats']()}* ➺ _${Object.entries(global.db.data.chats).filter((chat) => chat[1].isBanned).length}_ 
-⎔ *${lenguajeGB['smsBanUsers']()}* ➺ _${Object.entries(global.db.data.users).filter((user) => user[1].banned).length}_ ${(conn.user.jid == global.conn.user.jid ? '' : `\n⎔ *SOY SUB BOT DE: https://wa.me/${global.conn.user.jid.split`@`[0]}*`) || ''}
+⎔ *${lenguajeGB['smsBanChats']()}* ➺ _${Object.entries(global.db.data.chats).filter(chat => chat[1].isBanned).length}_ 
+⎔ *${lenguajeGB['smsBanUsers']()}* ➺ _${Object.entries(global.db.data.users).filter(user => user[1].banned).length}_ ${(conn.user.jid == global.conn.user.jid ? '' : `\n⎔ *SOY SUB BOT DE: https://wa.me/${global.conn.user.jid.split`@`[0]}*`) || ''}
 
 ✨ *◜INFORMACIÓN DEL USUARIO◞* ✨
 ⊜ *Tipo de registro »* ${user.registered === true ? `_${user.registroC === true ? 'Registro Completo 🗂️' : 'Registro Rápido 📑'}_` : '❌ _Sin registro_'}
@@ -126,79 +111,43 @@ let menu = `⎔ \`\`\`${horarioFecha}\`\`\`
 ⊜ *Diamantes ➟* ${limit} 💎
 ⊜ *GataCoins ➟* ${money} 🐈
 ⊜ *Tokens ➟* ${joincount} 🪙`.trim()
-
+      
 const buttonParamsJson = JSON.stringify({
-title: 'VER LISTA',
-description: 'Infórmate por medios oficiales sobre GataBot',
+title: "VER LISTA",
+description: "Infórmate por medios oficiales sobre GataBot",
 sections: [
-{
-title: 'ℹ️ Información',
-highlight_label: 'Popular',
+{ title: "ℹ️ Información", highlight_label: "Popular",
 rows: [
-{
-header: '✅ Redes',
-title: '🔓 Para: Todos',
-description: 'Infórmate por medios oficiales sobre GataBot',
-id: usedPrefix + 'cuentasgb'
-},
-{header: '📢 Grupos/Canales', title: '🔓 Para: Todos', description: '¡Te esperamos!', id: usedPrefix + 'grupos'},
-{
-header: '🎁 Donar',
-title: '🔓 Para: Todos',
-description: 'GataBot se mantiene funcionando gracias a donaciones ¡tú también puedes sumarte apoyando el proyecto!',
-id: usedPrefix + 'donar'
-}
-]
-},
-{
-title: '🔖 Atajos',
-highlight_label: 'Popular',
+{ header: "✅ Redes", title: "🔓 Para: Todos", description: "Infórmate por medios oficiales sobre GataBot", id: usedPrefix + "cuentasgb" },
+{ header: "📢 Grupos/Canales", title: "🔓 Para: Todos", description: "¡Te esperamos!", id: usedPrefix + "grupos" },
+{ header: "🎁 Donar", title: "🔓 Para: Todos", description: "GataBot se mantiene funcionando gracias a donaciones ¡tú también puedes sumarte apoyando el proyecto!", id: usedPrefix + "donar" }
+]},
+{ title: "🔖 Atajos", highlight_label: "Popular",
 rows: [
-{
-header: '🆕 Ser Bot (código)',
-title: '🔓 Para: Todos',
-description: '¡Conviértete en Bot con el método de código de 8 dígitos!',
-id: usedPrefix + 'serbot --code'
-},
-{header: '🤖 Ser Bot (qr)', title: '🔓 Para: Todos', description: 'Forma estándar de ser bot con código QR', id: usedPrefix + 'serbot'},
-{
-header: '🚄 Velocidad',
-title: '🔓 Para: Todos',
-description: 'Seleccione esto si desea saber el ping del Bot',
-id: usedPrefix + 'ping'
-},
-{header: '😺 Estado', title: '🔓 Para: Todos', description: 'Conoce en que estado se encuentra GataBot', id: usedPrefix + 'estado'}
-]
-},
-{
-title: 'Ⓜ️ Menú',
-highlight_label: 'Popular',
-rows: [{header: '⭐ Menú completo', title: '', description: 'Visita todos los comandos', id: usedPrefix + 'allmenu'}]
-}
-]
-})
+{ header: "🆕 Ser Bot (código)", title: "🔓 Para: Todos", description: "¡Conviértete en Bot con el método de código de 8 dígitos!", id: usedPrefix + "serbot --code" },
+{ header: "🤖 Ser Bot (qr)", title: "🔓 Para: Todos", description: "Forma estándar de ser bot con código QR", id: usedPrefix + "serbot" },
+{ header: "🚄 Velocidad", title: "🔓 Para: Todos", description: "Seleccione esto si desea saber el ping del Bot", id: usedPrefix + "ping" },
+{ header: "😺 Estado", title: "🔓 Para: Todos", description: "Conoce en que estado se encuentra GataBot", id: usedPrefix + "estado" }
+]},
+{ title: "Ⓜ️ Menú", highlight_label: "Popular",
+rows: [
+{ header: "⭐ Menú completo", title: "", description: "Visita todos los comandos", id: usedPrefix + "allmenu" }
+]}
+]})
 const interactiveMessage = {
-body: {text: menu},
-footer: {text: wm + ` \nSi algo no funciona utilice el comando *${usedPrefix}menu2*`},
-header: {
-title: `⭐ *------- NUEVO MENÚ -------* ⭐\n${lenguajeGB['smsConfi2']()} *${user.genero === 0 ? '👤' : user.genero == 'Ocultado 🕶️' ? '🕶️' : user.genero == 'Mujer 🚺' ? '🚺' : user.genero == 'Hombre 🚹' ? '🚹' : '👤'} ${user.registered === true ? user.name : taguser} 💖*`,
-subtitle: 'test4',
-hasMediaAttachment: false
-},
-nativeFlowMessage: {
-buttons: [
-{
-name: 'single_select',
+body: { text: menu },
+footer: { text: wm + ` \nSi algo no funciona utilice el comando *${usedPrefix}menu2*` },
+header: { title: `⭐ *------- NUEVO MENÚ -------* ⭐\n${lenguajeGB['smsConfi2']()} *${user.genero === 0 ? '👤' : user.genero == 'Ocultado 🕶️' ? `🕶️` : user.genero == 'Mujer 🚺' ? `🚺` : user.genero == 'Hombre 🚹' ? `🚹` : '👤'} ${user.registered === true ? user.name : taguser} 💖*`, subtitle: "test4", hasMediaAttachment: false },
+nativeFlowMessage: { buttons: [{ 
+name: "single_select",
 buttonParamsJson
-}
-]
-}
-}
-const message = {messageContextInfo: {deviceListMetadata: {}, deviceListMetadataVersion: 2}, interactiveMessage}
-await conn.relayMessage(m.chat, {viewOnceMessage: {message}}, {})
-} else {
-let menu =
-`${lenguajeGB['smsConfi2']()} *${user.genero === 0 ? '👤' : user.genero == 'Ocultado 🕶️' ? '🕶️' : user.genero == 'Mujer 🚺' ? '🚺' : user.genero == 'Hombre 🚹' ? '🚹' : '👤'} ${user.registered === true ? user.name : taguser} 💖*
+}]
+}}
+const message = { messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 }, interactiveMessage }
+await conn.relayMessage(m.chat, { viewOnceMessage: { message } }, {})
+      
+} else { 
+let menu = `${lenguajeGB['smsConfi2']()} *${user.genero === 0 ? '👤' : user.genero == 'Ocultado 🕶️' ? `🕶️` : user.genero == 'Mujer 🚺' ? `🚺` : user.genero == 'Hombre 🚹' ? `🚹` : '👤'} ${user.registered === true ? user.name : taguser} 💖*
 
 ⎔ \`\`\`${horarioFecha}\`\`\`
 ⎔ *${lenguajeGB['smsTotalUsers']()}* ➺ _${Object.keys(global.db.data.users).length}_ 
@@ -206,8 +155,8 @@ let menu =
 ⎔ *${lenguajeGB['smsUptime']()}* ➺ _${uptime}_ 
 ⎔ *${lenguajeGB['smsVersion']()}* ➺ _${vs}_
 ⎔ *${lenguajeGB['smsMode']()} ➺* _${global.opts['self'] ? `${lenguajeGB['smsModePrivate']().charAt(0).toUpperCase() + lenguajeGB['smsModePrivate']().slice(1).toLowerCase()}` : `${lenguajeGB['smsModePublic']().charAt(0).toUpperCase() + lenguajeGB['smsModePublic']().slice(1).toLowerCase()}`}_
-⎔ *${lenguajeGB['smsBanChats']()}* ➺ _${Object.entries(global.db.data.chats).filter((chat) => chat[1].isBanned).length}_ 
-⎔ *${lenguajeGB['smsBanUsers']()}* ➺ _${Object.entries(global.db.data.users).filter((user) => user[1].banned).length}_ ${(conn.user.jid == global.conn.user.jid ? '' : `\n⎔ *SOY SUB BOT DE: https://wa.me/${global.conn.user.jid.split`@`[0]}*`) || ''}
+⎔ *${lenguajeGB['smsBanChats']()}* ➺ _${Object.entries(global.db.data.chats).filter(chat => chat[1].isBanned).length}_ 
+⎔ *${lenguajeGB['smsBanUsers']()}* ➺ _${Object.entries(global.db.data.users).filter(user => user[1].banned).length}_ ${(conn.user.jid == global.conn.user.jid ? '' : `\n⎔ *SOY SUB BOT DE: https://wa.me/${global.conn.user.jid.split`@`[0]}*`) || ''}
 
 ✨ *◜INFORMACIÓN DEL USUARIO◞* ✨
 ⊜ *Tipo de registro »* ${user.registered === true ? `_${user.registroC === true ? 'Registro Completo 🗂️' : 'Registro Rápido 📑'}_` : '❌ _Sin registro_'}
@@ -283,40 +232,13 @@ let menu =
 ┃➺ _${usedPrefix}cuentasgatabot | cuentasgb_
 ┃
 *╰━━━━━━━━━━━━━⬣*`.trim()
-await conn.sendFile(m.chat, gataImg, 'lp.jpg', menu, fkontak, false, {
-contextInfo: {
-externalAdReply: {
-mediaUrl: null,
-mediaType: 1,
-description: null,
-title: gt,
-body: ' 😻 𝗦𝘂𝗽𝗲𝗿 𝗚𝗮𝘁𝗮𝗕𝗼𝘁-𝗠𝗗 - 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽 ',
-previewType: 0,
-thumbnail: imagen4,
-sourceUrl: redesMenu
-}
-}
-})
-await conn.sendMessage(m.chat, {audio: {url: vn}, fileName: 'error.mp3', mimetype: 'audio/mp4', ptt: true}, {quoted: m})
+await conn.sendFile(m.chat, gataImg, 'lp.jpg', menu, fkontak, false, { contextInfo: {externalAdReply :{ mediaUrl: null, mediaType: 1, description: null, title: gt, body: ' 😻 𝗦𝘂𝗽𝗲𝗿 𝗚𝗮𝘁𝗮𝗕𝗼𝘁-𝗠𝗗 - 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽 ', previewType: 0, thumbnail: imagen4, sourceUrl: redesMenu}}}) 
+await conn.sendMessage(m.chat, { audio: { url: vn }, fileName: 'error.mp3', mimetype: 'audio/mp4', ptt: true }, { quoted: m }) 
 //conn.sendFile(m.chat, gataVidMenu.getRandom(), 'gata.mp4', menu, fkontak)
-}
-} catch (e) {
-await m.reply(
-lenguajeGB['smsMalError3']() +
-'\n*' +
-lenguajeGB.smsMensError1() +
-'*\n*' +
-usedPrefix +
-`${lenguajeGB.lenguaje() == 'es' ? 'reporte' : 'report'}` +
-'* ' +
-`${lenguajeGB.smsMensError2()} ` +
-usedPrefix +
-command
-)
+}} catch (e) {
+await m.reply(lenguajeGB['smsMalError3']() + '\n*' + lenguajeGB.smsMensError1() + '*\n*' + usedPrefix + `${lenguajeGB.lenguaje() == 'es' ? 'reporte' : 'report'}` + '* ' + `${lenguajeGB.smsMensError2()} ` + usedPrefix + command)
 console.log(`❗❗ ${lenguajeGB['smsMensError2']()} ${usedPrefix + command} ❗❗`)
-console.log(e)
-}
-}
+console.log(e)}}
 
 handler.command = /^(menu|menú|memu|memú|help|2help|commands|commandos)$/i
 //handler.register = true
@@ -328,8 +250,8 @@ function clockString(ms) {
 let h = isNaN(ms) ? '--' : Math.floor(ms / 3600000)
 let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
 let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
-return [h, m, s].map((v) => v.toString().padStart(2, 0)).join(':')
-}
+return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')}  
+
 
 /* 
 import fs from 'fs'
@@ -462,8 +384,8 @@ console.log(`❗❗ ${lenguajeGB['smsMensError2']()} ${usedPrefix + command} ❗
 console.log(e)	
 }}
 handler.command = /^(menu|menú|memu|memú|help|info|comandos|2help|menu1.2|ayuda|commands|commandos|m|\?)$/i
-//handler.register = true
-handler.exp = 50
+//handler.register = false
+handler.exp = 1
 export default handler
 
 function clockString(ms) {
