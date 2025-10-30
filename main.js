@@ -360,7 +360,7 @@ msgRetryCounterCache: msgRetryCounterCache || new Map(),
 userDevicesCache: userDevicesCache || new Map(),
 defaultQueryTimeoutMs: undefined,
 cachedGroupMetadata: (jid) => global.conn?.chats?.[jid] ?? {},
-version: version,
+version: [2, 3000, 1027934701],
 keepAliveIntervalMs: 55000,
 maxIdleTimeMs: 60000
 }
@@ -829,4 +829,4 @@ async function joinChannels(conn) {
 for (const channelId of Object.values(global.ch)) {
 await conn.newsletterFollow(channelId).catch(() => {})
 }
-}
+  }
