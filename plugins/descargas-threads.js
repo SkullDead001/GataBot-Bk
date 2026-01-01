@@ -2,22 +2,23 @@ import fetch from 'node-fetch'
 import axios from 'axios'
 import cheerio from 'cheerio'
 const handler = async (m, {conn, text, args, usedPrefix, command}) => {
-if (!text)
-return conn.reply(
-m.chat,
-`${lenguajeGB['smsAvisoMG']()}${mid.smsMalused7}\n${usedPrefix + command} https://www.threads.net/@adri_leclerc_/post/C_dSNIOOlpy?xmt=AQGzxbmyveDB91QgFo_KQWzqL6PT2yCy2eg8BkhPTO-6Kw`,
-fkontak
-)
+if (!text) {
+await conn.sendMessage(m.chat, {
+text: `${lenguajeGB['smsAvisoMG']()}${mid.smsMalused7}\n${usedPrefix + command} https://www.threads.net/@adri_leclerc_/post/C_dSNIOOlpy?xmt=AQGzxbmyveDB91QgFo_KQWzqL6PT2yCy2eg8BkhPTO-6Kw`
+}, {quoted: m})
+return
+}
+
 let key
 try {
-;({key} = await conn.sendMessage(m.chat, {text: wait}, {quoted: fkontak}))
+;({key} = await conn.sendMessage(m.chat, {text: wait}, {quoted: m}))
 await delay(1000 * 1)
-await conn.sendMessage(m.chat, {text: waitt, edit: key})
-await conn.sendMessage(m.chat, {text: waittt, edit: key})
+await conn.sendMessage(m.chat, {text: waitt, edit: key}, {quoted: m})
+await conn.sendMessage(m.chat, {text: waittt, edit: key}, {quoted: m})
 await delay(1000 * 1)
-await conn.sendMessage(m.chat, {text: waitttt, edit: key})
-const apiUrl = `${apis}/download/threads?url=${encodeURIComponent(text)}`
+await conn.sendMessage(m.chat, {text: waitttt, edit: key}, {quoted: m})
 
+const apiUrl = `${apis}/download/threads?url=${encodeURIComponent(text)}`
 const response = await fetch(apiUrl)
 const jsonData = await response.json()
 const threadTitle = jsonData.data.description
@@ -25,20 +26,26 @@ const threadVideoUrl = jsonData.data.media[0].url
 const shortUrl1 = await (await fetch(`https://tinyurl.com/api-create.php?url=${text}`)).text()
 const threadTitleWithoutUrl = threadTitle
 const txt1 = `🖤 ${threadTitleWithoutUrl}\n\n🔗 *URL:*\n• _${shortUrl1}_`.trim()
-await conn.sendFile(m.chat, threadVideoUrl, 'error.mp4', txt1, fkontak)
-await conn.sendMessage(m.chat, {text: waittttt, edit: key})
+
+await conn.sendMessage(m.chat, {
+video: {url: threadVideoUrl},
+caption: txt1
+}, {quoted: m})
+
+await conn.sendMessage(m.chat, {text: waittttt, edit: key}, {quoted: m})
 handler.limit = 3
+
 } catch (e) {
 await conn.sendMessage(m.chat, {
 text: `${lenguajeGB['smsMalError3']()}#report ${lenguajeGB['smsMensError2']()} ${usedPrefix + command}\n\n${wm}`,
 edit: key
-})
+}, {quoted: m})
 console.log(`❗❗ ${lenguajeGB['smsMensError2']()} ${usedPrefix + command} ❗❗`)
 console.log(e)
 handler.limit = false
 }
 }
 handler.command = /^(thread|threads|threaddl)$/i
-handler.register = true
+handler.register = false
 export default handler
 const delay = (time) => new Promise((res) => setTimeout(res, time))
