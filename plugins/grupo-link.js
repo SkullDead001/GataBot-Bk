@@ -1,10 +1,10 @@
-let handler = async (m, {conn}) => {
+let handler = async (m, {conn, usedPrefix, command}) => {
 try {
 let res = await conn.groupInviteCode(m.chat)
 let link = 'https://chat.whatsapp.com/' + res
-await conn.reply(m.chat, `${link}`, m)
+await conn.sendMessage(m.chat, {text: `${link}`}, {quoted: m})
 } catch (e) {
-await conn.reply(m.chat, `${lenguajeGB['smsMalError3']()}#report ${lenguajeGB['smsMensError2']()} ${usedPrefix + command}\n\n${wm}`, fkontak, m)
+await conn.sendMessage(m.chat, {text: `${lenguajeGB['smsMalError3']()}#report ${lenguajeGB['smsMensError2']()} ${usedPrefix + command}\n\n${wm}`}, {quoted: m})
 console.log(`❗❗ ${lenguajeGB['smsMensError2']()} ${usedPrefix + command} ❗❗`)
 console.log(e)
 }
